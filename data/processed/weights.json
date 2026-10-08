@@ -1,0 +1,57 @@
+{
+  "goals": {
+    "performance": 0.6483290138222367,
+    "workload": 0.22965079406263714,
+    "cost": 0.12202019211512623
+  },
+  "criteria": {
+    "prop": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "hooker": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "lock": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "loose_forward": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "scrum_half": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "fly_half": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "centre": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    },
+    "back_three": {
+      "metres_carried": 0.25,
+      "line_breaks": 0.25,
+      "tackles_made": 0.25,
+      "turnovers_won": 0.25
+    }
+  }
+}
