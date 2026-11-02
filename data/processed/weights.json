@@ -6,52 +6,52 @@
   },
   "criteria": {
     "prop": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.15687597383985907,
+      "line_breaks": 0.27171715717748196,
+      "tackles_made": 0.48318902596302593,
+      "turnovers_won": 0.0882178430196329
     },
     "hooker": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.0882178430196329,
+      "line_breaks": 0.15687597383985907,
+      "tackles_made": 0.48318902596302593,
+      "turnovers_won": 0.27171715717748196
     },
     "lock": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.27171715717748196,
+      "line_breaks": 0.15687597383985907,
+      "tackles_made": 0.48318902596302593,
+      "turnovers_won": 0.0882178430196329
     },
     "loose_forward": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.0882178430196329,
+      "line_breaks": 0.15687597383985907,
+      "tackles_made": 0.48318902596302593,
+      "turnovers_won": 0.27171715717748196
     },
     "scrum_half": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.15687597383985907,
+      "line_breaks": 0.48318902596302593,
+      "tackles_made": 0.27171715717748196,
+      "turnovers_won": 0.0882178430196329
     },
     "fly_half": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.27171715717748196,
+      "line_breaks": 0.48318902596302593,
+      "tackles_made": 0.15687597383985907,
+      "turnovers_won": 0.0882178430196329
     },
     "centre": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.15687597383985907,
+      "line_breaks": 0.48318902596302593,
+      "tackles_made": 0.27171715717748196,
+      "turnovers_won": 0.0882178430196329
     },
     "back_three": {
-      "metres_carried": 0.25,
-      "line_breaks": 0.25,
-      "tackles_made": 0.25,
-      "turnovers_won": 0.25
+      "metres_carried": 0.48318902596302593,
+      "line_breaks": 0.27171715717748196,
+      "tackles_made": 0.15687597383985907,
+      "turnovers_won": 0.0882178430196329
     }
   }
 }

@@ -1,11 +1,11 @@
-"""Stage B check: bound the achievable range of each goal measure.
+"""Stage B and F check: bound the achievable range of each goal measure.
 
 A goal target set outside the range any legal squad can reach makes that goal
 either unsatisfiable or redundant, so each target must be placed inside the
 range first. Solving for the extremes also confirms that the positional
 constraints admit a feasible squad at all.
 
-Run from the project root:  python src\\04_feasibility.py
+Run from the project root:  python src\\check_feasibility.py
 """
 
 import pandas as pd
@@ -15,8 +15,6 @@ PROCESSED = "data/processed"
 SQUAD_SIZE = 23
 FORWARDS_MIN, FORWARDS_MAX = 13, 14
 
-# Minimum players required from each role, from the laws and conventions of
-# the game. Front row cover is props plus hookers taken together.
 ROLE_MIN = {
     "hooker": 2,
     "prop": 3,
@@ -37,7 +35,6 @@ def build(players: pd.DataFrame, objective: str, sense: int):
     x = {i: pulp.LpVariable(f"x_{i}", cat="Binary") for i in players.index}
 
     prob += pulp.lpSum(players.loc[i, objective] * x[i] for i in players.index)
-
     prob += pulp.lpSum(x.values()) == SQUAD_SIZE, "squad_size"
 
     forwards = pulp.lpSum(
@@ -62,47 +59,40 @@ def solve(players: pd.DataFrame, objective: str, sense: int, label: str):
     prob, x = build(players, objective, sense)
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
     if pulp.LpStatus[status] != "Optimal":
-        print(f"{label:<22} INFEASIBLE ({pulp.LpStatus[status]})")
+        print(f"{label:<24} INFEASIBLE ({pulp.LpStatus[status]})")
         return None
-    chosen = [i for i in players.index if x[i].value() > 0.5]
-    picked = players.loc[chosen]
-    print(
-        f"{label:<22} {objective} = {picked[objective].sum():>12,.0f}"
-        f"   forwards {picked.role.isin(FORWARD_ROLES).sum()}"
-    )
+    picked = players.loc[[i for i in players.index if x[i].value() > 0.5]]
+    print(f"{label:<24} {picked[objective].sum():>12,.2f}")
     return picked
 
 
 def main() -> None:
-    df = pd.read_parquet(f"{PROCESSED}/players_season.parquet")
-    squad = df[df.in_squad & df.role.notna() & df.cost.notna()].reset_index(drop=True)
-    print(f"selectable players: {len(squad)} of {df.in_squad.sum()}")
+    squad = pd.read_parquet(f"{PROCESSED}/squad_value.parquet")
+    squad = squad[squad.role.notna() & squad.cost.notna()].reset_index(drop=True)
+    print(f"selectable players: {len(squad)}")
     print()
 
-    print("available by role:")
-    print(squad.role.value_counts().to_string())
-    print()
-
-    cheapest = solve(squad, "cost", pulp.LpMinimize, "cheapest squad")
-    dearest = solve(squad, "cost", pulp.LpMaximize, "most expensive squad")
+    weakest = solve(squad, "value", pulp.LpMinimize, "weakest squad")
+    strongest = solve(squad, "value", pulp.LpMaximize, "strongest squad")
     lightest = solve(squad, "workload", pulp.LpMinimize, "lightest workload")
     heaviest = solve(squad, "workload", pulp.LpMaximize, "heaviest workload")
+    cheapest = solve(squad, "cost", pulp.LpMinimize, "cheapest squad")
+    dearest = solve(squad, "cost", pulp.LpMaximize, "most expensive squad")
 
-    if cheapest is None:
-        print()
-        print("No legal squad exists. The positional requirements cannot all be")
-        print("met from the available pool. Check the counts above.")
+    if strongest is None:
+        print("No legal squad exists. Check the positional counts.")
         return
 
     print()
-    print("--- target ranges ---")
-    print(f"cost     £{cheapest.cost.sum():,.0f} to £{dearest.cost.sum():,.0f}")
-    print(f"workload  {lightest.workload.sum():,.0f} to {heaviest.workload.sum():,.0f} minutes")
+    print("--- achievable ranges ---")
+    print(f"performance  {weakest.value.sum():.2f} to {strongest.value.sum():.2f}")
+    print(f"workload     {lightest.workload.sum():,.0f} to {heaviest.workload.sum():,.0f} minutes")
+    print(f"cost         £{cheapest.cost.sum():,.0f} to £{dearest.cost.sum():,.0f}")
     print()
-    print("cheapest squad composition:")
-    print(cheapest.role.value_counts().to_string())
+    print("--- what the strongest squad costs you ---")
+    print(f"its workload  {strongest.workload.sum():,.0f} minutes")
+    print(f"its cost      £{strongest.cost.sum():,.0f}")
 
 
 if __name__ == "__main__":
     main()
-    
