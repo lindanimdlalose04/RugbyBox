@@ -14,15 +14,19 @@ Run from the project root:  python src\\06_scoring.py
 
 import json
 import os
+import sys
 
 import numpy as np
 import pandas as pd
 
-PROCESSED = "data/processed"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as cfg  # noqa: E402
+
+PROCESSED = cfg.PROCESSED
 MEASURES = ["metres_carried", "line_breaks", "tackles_made", "turnovers_won"]
 
 # Weight on efficiency against volume. 0 is volume only, 1 is efficiency only.
-ALPHA = 0.35
+ALPHA = cfg.ALPHA
 
 
 def main() -> None:

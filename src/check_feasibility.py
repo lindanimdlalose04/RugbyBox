@@ -5,70 +5,43 @@ either unsatisfiable or redundant, so each target must be placed inside the
 range first. Solving for the extremes also confirms that the positional
 constraints admit a feasible squad at all.
 
+The structural constraints come from config.py, the same ones the goal
+programme itself is built on.
+
 Run from the project root:  python src\\check_feasibility.py
 """
+
+import os
+import sys
 
 import pandas as pd
 import pulp
 
-PROCESSED = "data/processed"
-SQUAD_SIZE = 23
-FORWARDS_MIN, FORWARDS_MAX = 13, 14
-
-ROLE_MIN = {
-    "hooker": 2,
-    "prop": 3,
-    "lock": 3,
-    "loose_forward": 4,
-    "scrum_half": 2,
-    "fly_half": 2,
-    "centre": 2,
-    "back_three": 3,
-}
-FRONT_ROW_MIN = 5
-FORWARD_ROLES = {"hooker", "prop", "lock", "loose_forward"}
-
-
-def build(players: pd.DataFrame, objective: str, sense: int):
-    """A selection model over one objective, under the structural constraints."""
-    prob = pulp.LpProblem("matchday_squad", sense)
-    x = {i: pulp.LpVariable(f"x_{i}", cat="Binary") for i in players.index}
-
-    prob += pulp.lpSum(players.loc[i, objective] * x[i] for i in players.index)
-    prob += pulp.lpSum(x.values()) == SQUAD_SIZE, "squad_size"
-
-    forwards = pulp.lpSum(
-        x[i] for i in players.index if players.loc[i, "role"] in FORWARD_ROLES
-    )
-    prob += forwards >= FORWARDS_MIN, "forwards_min"
-    prob += forwards <= FORWARDS_MAX, "forwards_max"
-
-    front_row = pulp.lpSum(
-        x[i] for i in players.index if players.loc[i, "role"] in {"hooker", "prop"}
-    )
-    prob += front_row >= FRONT_ROW_MIN, "front_row_cover"
-
-    for role, lo in ROLE_MIN.items():
-        members = [i for i in players.index if players.loc[i, "role"] == role]
-        prob += pulp.lpSum(x[i] for i in members) >= lo, f"min_{role}"
-
-    return prob, x
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as cfg  # noqa: E402
 
 
 def solve(players: pd.DataFrame, objective: str, sense: int, label: str):
-    prob, x = build(players, objective, sense)
-    status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    if pulp.LpStatus[status] != "Optimal":
-        print(f"{label:<24} INFEASIBLE ({pulp.LpStatus[status]})")
+    """The extreme of one measure, under the structural constraints alone."""
+    prob = pulp.LpProblem("matchday_squad", sense)
+    x = cfg.selection_vars(players)
+    prob += pulp.lpSum(players.loc[i, objective] * x[i] for i in players.index)
+    cfg.add_structure(prob, x, players)
+
+    try:
+        cfg.solve(prob, label)
+    except cfg.SolverError as exc:
+        print(f"{label:<24} {exc}")
         return None
-    picked = players.loc[[i for i in players.index if x[i].value() > 0.5]]
-    print(f"{label:<24} {picked[objective].sum():>12,.2f}")
-    return picked
+
+    chosen = cfg.picked(players, x)
+    print(f"{label:<24} {chosen[objective].sum():>12,.2f}")
+    return chosen
 
 
 def main() -> None:
-    squad = pd.read_parquet(f"{PROCESSED}/squad_value.parquet")
-    squad = squad[squad.role.notna() & squad.cost.notna()].reset_index(drop=True)
+    squad = cfg.selectable(pd.read_parquet(f"{cfg.PROCESSED}/squad_value.parquet"))
+    print(cfg.solver_banner())
     print(f"selectable players: {len(squad)}")
     print()
 
@@ -79,19 +52,38 @@ def main() -> None:
     cheapest = solve(squad, "cost", pulp.LpMinimize, "cheapest squad")
     dearest = solve(squad, "cost", pulp.LpMaximize, "most expensive squad")
 
-    if strongest is None:
-        print("No legal squad exists. Check the positional counts.")
+    extremes = {
+        "performance": (weakest, strongest),
+        "workload": (lightest, heaviest),
+        "cost": (cheapest, dearest),
+    }
+    if any(e is None for pair in extremes.values() for e in pair):
+        print()
+        print("No legal squad exists for at least one measure. "
+              "Check the positional counts before reading anything else.")
         return
 
     print()
     print("--- achievable ranges ---")
     print(f"performance  {weakest.value.sum():.2f} to {strongest.value.sum():.2f}")
-    print(f"workload     {lightest.workload.sum():,.0f} to {heaviest.workload.sum():,.0f} minutes")
-    print(f"cost         £{cheapest.cost.sum():,.0f} to £{dearest.cost.sum():,.0f}")
+    print(f"workload     {lightest.workload.sum():,.0f} to "
+          f"{heaviest.workload.sum():,.0f} minutes")
+    print(f"cost         GBP {cheapest.cost.sum():,.0f} to {dearest.cost.sum():,.0f}")
+    print()
+    print("--- the three targets currently set in config.py ---")
+    for name, target in (
+        ("performance", cfg.TARGET_PERFORMANCE),
+        ("workload", cfg.TARGET_WORKLOAD),
+        ("cost", cfg.TARGET_COST),
+    ):
+        column = cfg.GOAL_COLUMN[name]
+        lo, hi = extremes[name]
+        inside = lo[column].sum() <= target <= hi[column].sum()
+        print(f"{name:<12} {target:>12,}   {'inside the range' if inside else 'OUT OF RANGE'}")
     print()
     print("--- what the strongest squad costs you ---")
     print(f"its workload  {strongest.workload.sum():,.0f} minutes")
-    print(f"its cost      £{strongest.cost.sum():,.0f}")
+    print(f"its cost      GBP {strongest.cost.sum():,.0f}")
 
 
 if __name__ == "__main__":

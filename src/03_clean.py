@@ -9,22 +9,26 @@ Run from the project root:  python src\\03_clean.py
 """
 
 import os
+import sys
 
 import numpy as np
 import pandas as pd
 
-RAW = "data/raw"
-OUT = "data/processed"
-CLUB_ID = "821a6e9b"
-COMPETITION = "Gallagher Premiership"
-SEASON_START = "2025-09-01"
-SEASON_END = "2026-06-30"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as cfg  # noqa: E402
+
+RAW = cfg.RAW
+OUT = cfg.PROCESSED
+CLUB_ID = cfg.CLUB_ID
+COMPETITION = cfg.COMPETITION
+SEASON_START = cfg.SEASON_START
+SEASON_END = cfg.SEASON_END
 
 # Appearances required before a player may define the efficiency frontier.
-FRONTIER_MIN_APPS = 3
+FRONTIER_MIN_APPS = cfg.FRONTIER_MIN_APPS
 
 # Recent fixtures counted towards accumulated workload.
-WORKLOAD_FIXTURES = 3
+WORKLOAD_FIXTURES = cfg.WORKLOAD_FIXTURES
 
 # Average annual salary by position, Premiership Rugby salary cap report,
 # 2022/23 season. The most recent published per-position breakdown; applied to
@@ -50,8 +54,7 @@ SALARY = {
 # far individual cost departs from that average and is a stated assumption
 # tested by sensitivity analysis: 0 gives a flat position average, 1 scales
 # cost in direct proportion to minutes played.
-COST_DISPERSION = 0.6
-SQUAD_SIZE = 23
+COST_DISPERSION = cfg.COST_DISPERSION
 
 # Raw position labels to the eight roles used as efficiency peer groups.
 ROLE_MAP = {
@@ -151,6 +154,13 @@ def main() -> None:
     for c in stat_cols:
         season[c] = pd.to_numeric(season[c], errors="coerce")
 
+    # One row per appearance, kept so later stages can judge how much evidence
+    # a player's season rate actually rests on. Season totals alone cannot
+    # distinguish a steady rate from one good afternoon.
+    season[["player_id", "match_id", "minutes", *stat_cols]].to_parquet(
+        f"{OUT}/player_appearances.parquet", index=False
+    )
+
     agg = season.groupby("player_id").agg(
         name=("name", "first"),
         team_id=("team_id", "first"),
@@ -186,13 +196,20 @@ def main() -> None:
 
     # Share of the role's total minutes at the club, scaled so the mean within
     # each role is exactly 1 and the published position average is preserved.
+    # The multiplier is 1 + COST_DISPERSION * (raw - 1) with raw never
+    # negative, so it cannot fall below 1 - COST_DISPERSION and needs no floor.
     club = agg[agg.in_squad]
     role_mean_minutes = club.groupby("role").minutes.transform("mean")
     raw = club.minutes / role_mean_minutes
     multiplier = 1 + COST_DISPERSION * (raw - 1)
 
-    agg["cost"] = agg.role.map(SALARY) / club_fixtures
-    agg.loc[club.index, "cost"] *= multiplier.clip(lower=0.25)
+    # Cost is modelled only for the club's own players. A per-match figure for
+    # a league player, derived from this club's fixture count, would mean
+    # nothing, and nothing downstream selects from outside the squad.
+    agg["cost"] = np.nan
+    agg.loc[club.index, "cost"] = (
+        club.role.map(SALARY) / club_fixtures * multiplier
+    )
 
     agg = agg.reset_index()
     agg.to_parquet(f"{OUT}/players_season.parquet")

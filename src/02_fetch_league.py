@@ -17,13 +17,14 @@ import sys
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as cfg  # noqa: E402
 from rb import get  # noqa: E402
 
-CLUB_ID = "821a6e9b"
-SEASON_START = "2025-09-01"
-SEASON_END = "2026-06-30"
-RAW = "data/raw"
-CACHE = f"{RAW}/players"
+CLUB_ID = cfg.CLUB_ID
+SEASON_START = cfg.SEASON_START
+SEASON_END = cfg.SEASON_END
+RAW = cfg.RAW
+CACHE = cfg.PLAYER_CACHE
 
 
 def cached_player(pid: str) -> pd.DataFrame:

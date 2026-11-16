@@ -12,34 +12,12 @@ import json
 import os
 import sys
 
-import numpy as np
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as cfg  # noqa: E402
+from ahp import CR_LIMIT, priorities  # noqa: E402
 from judgements import CRITERIA, GOALS, MEASURES  # noqa: E402
 
-OUT = "data/processed"
-
-# Saaty's random index: the consistency of a randomly filled matrix of size n.
-RANDOM_INDEX = {1: 0.0, 2: 0.0, 3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32}
-CR_LIMIT = 0.10
-
-
-def priorities(names, comparisons):
-    """Weights and consistency ratio for one pairwise comparison matrix."""
-    n = len(names)
-    matrix = np.ones((n, n))
-    for (a, b), value in comparisons.items():
-        i, j = names.index(a), names.index(b)
-        matrix[i, j] = value
-        matrix[j, i] = 1 / value
-
-    weights = np.prod(matrix, axis=1) ** (1 / n)
-    weights = weights / weights.sum()
-
-    lambda_max = float(np.mean((matrix @ weights) / weights))
-    ci = (lambda_max - n) / (n - 1)
-    cr = ci / RANDOM_INDEX[n] if RANDOM_INDEX[n] else 0.0
-    return weights, lambda_max, ci, cr
+OUT = cfg.PROCESSED
 
 
 def report(label, names, comparisons):
