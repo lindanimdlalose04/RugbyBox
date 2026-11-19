@@ -1,40 +1,36 @@
 # Where this project came from
 
-This repository grew out of **RugbyBox**, a decision support system built for
-ITRI 628 at North-West University in 2026. That project selected a rugby
-matchday 23 under three competing goals: field the strongest side, keep
-player workload below a safe ceiling, and stay inside the matchday wage
-budget.
+Fantasy Rugby Box grew out of the **RugbyBox DSS**, a decision support
+system built for ITRI 628 at North-West University in 2026. That project
+selected a rugby matchday 23 under three competing goals: field the
+strongest side, keep player workload below a safe ceiling, and stay inside
+the matchday wage budget.
 
-RugbyBox is finished. It is frozen at the tag `v1.0-dss-submission`, which
-marks the state that was submitted and assessed, with a later tag covering a
-post-assessment revision of the efficiency measure. Nothing in this
-repository changes it.
+Both now live in the same repository. The DSS is in `dss/` and is finished:
+the tag `dss-v1.0.0` marks the state that was submitted and assessed, and
+`dss-v1.1.0` the revision made after assessment. Nothing in `fantasy/`
+changes it.
 
-<https://github.com/lindanimdlalose04/RugbyBox>
+## Two projects, one repository
 
-## Why a separate repository rather than a branch or a fork
+The two answer different questions for different people. The DSS answers
+"which 23 should a coach name this weekend, and what does each compromise
+cost", and its reader is an examiner. This project answers "which fifteen
+should I pick inside my budget", and its reader is someone playing a game.
 
-The two projects answer different questions for different people. RugbyBox
-answers "which 23 should a coach name this weekend, and what does each
-compromise cost", and its reader is an examiner. This project answers "which
-fifteen should I pick this week inside my budget", and its reader is someone
-playing a fantasy game.
-
-A long-lived branch would have tangled the assessed artefact's history with
-product work, and would never have merged back. A fork would have started
-this repository with a commit that mostly deleted things: the Solver
-workbook, the efficiency analysis, the goal programme. A history whose first
-entry is "remove the thing this used to be" is worse than no shared history
-at all.
-
-So this is a fresh repository, and the connection between the two lives in
-this document and in a note at the top of RugbyBox's README.
+They started in separate repositories, for that reason. It did not last.
+Both are built from the same data, the folders looked alike, and within
+days a commit meant for one was made in the other. They now share one
+repository, each in its own folder with its own README, changelog and
+version tags, and the code they genuinely share lives once, in `shared/`.
+The reasoning is in `docs/decisions/0001-one-repository-for-both-projects.md`
+at the repository root, which supersedes this project's own first decision.
 
 ## What carried over
 
-**The data layer.** `src/rb.py` reads the parquet store that backs the
-`rugbypy` package, with retries and a local cache. It is unchanged.
+**The data layer.** The reader for the parquet store behind `rugbypy`,
+with its retries, came across unchanged. It is now shared by both projects
+from `shared/rugbystore`.
 
 **The approach to selection.** Choosing a squad under a budget and positional
 quotas is an integer programme in both projects. The solver and the general
@@ -73,7 +69,7 @@ The first is about small samples. Measuring output per minute and ranking on
 it will put players with barely any playing time at the top, because a short
 spell is where a freak rate is most likely. Any projection built here needs
 shrinking toward a sensible baseline by how much evidence sits behind it.
-RugbyBox's `src/04_dea.py` estimates that baseline from split-half
+The DSS's `dss/src/04_dea.py` estimates that baseline from split-half
 reliability rather than asserting it.
 
 The second is about validating a model against its own output. RugbyBox

@@ -1,0 +1,15 @@
+# Everything every project in this repository needs, in one environment.
+#
+#   python -m venv .venv
+#   .venv\Scripts\pip install -r requirements.txt
+#
+# Each project also keeps its own requirements.txt, so it can be set up on
+# its own. Their pins are identical where they overlap, so one environment
+# serves both.
+
+-r fantasy/requirements.txt
+-r dss/requirements.txt
+
+# The shared code in shared/, installed so that `from rugbystore import get`
+# works from any project.
+-e .

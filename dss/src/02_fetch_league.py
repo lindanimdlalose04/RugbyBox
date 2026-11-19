@@ -18,7 +18,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as cfg  # noqa: E402
-from rb import get  # noqa: E402
+from rugbystore import get  # noqa: E402
 
 CLUB_ID = cfg.CLUB_ID
 SEASON_START = cfg.SEASON_START

@@ -3,8 +3,9 @@
 Pick a fantasy rugby squad that scores the most points your budget allows,
 and plan your transfers more than one week ahead.
 
-> **Early development.** The data layer works. The optimiser and the
-> interface are being built. Nothing here is usable yet.
+> **Version 0.2.0.** Playable: build a fifteen and play it against the
+> optimiser. Transfer planning and a risk setting are still to come. Part of
+> the [RugbyBox repository](../README.md).
 
 ## The problem
 
@@ -66,18 +67,20 @@ players, so the budget is doing the work rather than decorating the model.
 
 ## Running it
 
-Requires Python 3.11+.
+Requires Python 3.11+. The environment is shared by every project in the
+repository, so it is set up once, from the repository root:
 
     python -m venv .venv
     .venv\Scripts\pip install -r requirements.txt
 
-Then, from the project root:
+Then, from this folder:
 
-    python src/01_fetch.py     # every player in the competition (~15 min cold)
-    python src/02_clean.py     # the appearance table, with the quality guards
-    python src/03_project.py   # expected points per player
-    python src/04_price.py     # modelled prices, and the budget checks
-    python src/05_optimise.py  # the squad, the captain, and what money buys
+    cd fantasy
+    python src/01_fetch.py        # every player in the competition (~15 min cold)
+    python src/02_clean.py        # the appearance table, with the quality guards
+    python src/03_project.py      # expected points per player
+    python src/04_price.py        # modelled prices, and the budget checks
+    python src/05_optimise.py     # the squad, the captain, and what money buys
     python src/06_export_web.py   # solve across budgets for the interface
 
 Then open `web/index.html`. It has three rooms:
@@ -93,7 +96,13 @@ Then open `web/index.html`. It has three rooms:
 It needs no server. The optimiser is run for every budget ahead of time and
 the answers ship beside the page, so it can be served as a static site.
 
-    .venv\Scripts\pytest       # add --network to also read the live store
+Tests, from this folder:
+
+    pytest
+
+or every project's tests at once, from the repository root:
+
+    python run_tests.py
 
 ## Documentation
 
@@ -107,11 +116,12 @@ the answers ship beside the page, so it can be served as a static site.
 
 ## Where this came from
 
-This grew out of [RugbyBox](https://github.com/lindanimdlalose04/RugbyBox), a
-multi-criteria squad selection system built for a university decision support
-systems module. That project is finished and frozen. The data layer and the
-integer programming approach carry over; the DEA, AHP and goal programming
-stages do not. See `docs/lineage.md`.
+This grew out of the [RugbyBox DSS](../dss/README.md), a multi-criteria squad
+selection system built for a university decision support systems module,
+which lives in this same repository under `dss/`. The data reader is shared
+with it, in `shared/rugbystore`; the integer programming approach carries
+over; the DEA, AHP and goal programming stages do not. See
+`docs/lineage.md`.
 
 ## Data
 

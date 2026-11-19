@@ -7,12 +7,39 @@ something a stranger could rely on.
 Because results depend on data that is updated outside this project, each
 release also records the date of the data snapshot it was built against.
 
+This project lives in the RugbyBox repository, where each project is
+versioned on its own. Its releases are tagged `fantasy-vX.Y.Z`.
+
 ## Unreleased
+
+Nothing yet.
+
+## 0.2.0, 2026-11-19
+
+Data as of 2026-11-16. Tagged `fantasy-v0.2.0`.
+
+The first release. A squad can be built and played against the optimiser
+through a static web page.
+
+There is no separate 0.1.0. It was planned for the optimiser on its own, and
+the optimiser and the interface were finished together, so the two planned
+milestones ship as this one release.
+
+### Moved
+
+- The project now lives in the RugbyBox repository under `fantasy/`, beside
+  the DSS it grew from, instead of in a repository of its own. Two
+  repositories built from the same data made it too easy to commit to the
+  wrong one, and it happened. The full history came across. See
+  `docs/decisions/0001-one-repository-for-both-projects.md` at the
+  repository root.
+- The store reader is no longer a copy in `src/`. Both projects now use the
+  one in `shared/rugbystore`, and its tests moved with it.
 
 ### Added
 
 - Repository scaffold, documentation and decision records
-- `src/rb.py`, the parquet store reader, carried over unchanged from RugbyBox
+- The parquet store reader, carried over unchanged from RugbyBox
 - `src/rules.py`, the scoring system and squad rules as a validated object,
   with point values tuned against 18 499 real appearances so that every
   position is worth picking
@@ -86,6 +113,6 @@ release also records the date of the data snapshot it was built against.
 
 ## Planned
 
-- `v0.1.0` optimiser picks a squad from a budget and a rules object
-- `v0.2.0` an interface
-- `v1.0.0` usable by someone who did not write it
+- `0.3.0` transfer planning over several gameweeks
+- `0.4.0` a risk setting, for a high floor rather than a high average
+- `1.0.0` usable by someone who did not write it

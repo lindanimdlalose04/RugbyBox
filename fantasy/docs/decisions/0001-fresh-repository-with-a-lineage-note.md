@@ -1,6 +1,8 @@
 # 1. Fresh repository with a lineage note
 
-- **Status:** accepted
+- **Status:** superseded on 2026-11-19 by
+  `docs/decisions/0001-one-repository-for-both-projects.md` at the
+  repository root. Kept as the record of what was decided at the time.
 - **Date:** 2026-11-16
 
 ## Context

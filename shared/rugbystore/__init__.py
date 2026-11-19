@@ -1,21 +1,29 @@
-"""Direct reader for the rugbydata parquet store.
+"""Reader for the rugbydata parquet store.
 
 Reads the parquet files that back the rugbypy package straight from the raw
 store. Requests are retried with exponential backoff, since the host throttles
 sustained sequential access; a genuine 404 is raised immediately rather than
 retried.
 
+Both projects in this repository read their match data through this module,
+so a fix made here reaches both. Install it once from the repository root:
+
+    pip install -r requirements.txt
+
+then import it anywhere:
+
+    from rugbystore import get
+
 Data source: Bailey, S. rugbypy. https://github.com/seanyboi/rugbypy
 Store:       https://github.com/seanyboi/rugbydata (Apache-2.0)
-
-Carried over unchanged from RugbyBox. See docs/lineage.md. RugbyBox is
-frozen, so fixes flow one way: into this file, not back.
 """
 
 import time
 from urllib.error import HTTPError
 
 import pandas as pd
+
+__version__ = "1.0.0"
 
 BASE = "https://raw.githubusercontent.com/seanyboi/rugbydata/main/data/v3/"
 
@@ -25,7 +33,7 @@ VALID_KINDS = {"team", "player", "match", "competition", "venue"}
 def get(kind: str, name: str, retries: int = 3, pause: float = 0.2) -> pd.DataFrame:
     """Read one parquet file from the store.
 
-    kind:    one of team, player, member, match, competition, venue
+    kind:    one of team, player, match, competition, venue
     name:    an entity id, or a registry name such as 'team_registry'
     retries: attempts before giving up on a transient failure
     pause:   delay after a successful read, to stay under the host's rate limit

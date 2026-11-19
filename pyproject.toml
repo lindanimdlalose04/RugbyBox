@@ -1,0 +1,20 @@
+# Makes the code in shared/ installable, so both projects can import it
+# without copying it. Installed by `pip install -r requirements.txt`.
+#
+# The projects themselves are not packages: each is a set of numbered stages
+# run from its own folder. See README.md.
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rugbybox-shared"
+version = "1.0.0"
+description = "Code shared by the projects in the RugbyBox repository."
+requires-python = ">=3.11"
+dependencies = ["pandas", "pyarrow"]
+
+[tool.setuptools.packages.find]
+where = ["shared"]
+include = ["rugbystore*"]

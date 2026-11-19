@@ -7,7 +7,7 @@ passed, so a normal run needs no connection.
 
 import pytest
 
-import rb
+import rugbystore as rb
 
 
 def test_rejects_an_unknown_kind():

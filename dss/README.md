@@ -1,9 +1,30 @@
-# RugbyBox
+# RugbyBox DSS
 
 Multi-criteria selection of a rugby matchday squad under competing
 performance, workload and budget goals.
 
 ITRI 628 Decision Support Systems, North-West University, 2026.
+
+> **Finished and resting.** This is the project the repository is named
+> after and the one [Fantasy Rugby Box](../fantasy/README.md) grew out of.
+> It is complete and still runs, but new work happens in `fantasy/`.
+>
+> - `dss-v1.0.0` is the version exactly as submitted and assessed.
+> - `dss-v1.1.0` is the revision made afterwards, described below.
+>
+> To see the assessed version: `git checkout dss-v1.0.0`.
+
+> **Known issue, found after this project was finished.** Two of the four
+> inputs to the efficiency analysis, `line_breaks` and `turnovers_won`, are
+> corrupted in the source data. Across this competition 84% of non-zero
+> `line_breaks` values are an exact copy of another column, usually
+> `carries`, and `turnovers_won` is almost as bad. They were found while
+> building Fantasy Rugby Box, which does not use them. Here they remain two of
+> the four outputs in `src/04_dea.py` and two of the four measures weighted by
+> the AHP, so the efficiency scores, and the selections built on them, rest
+> partly on data that does not record what it claims to. The method stands;
+> those two inputs do not. See
+> `../fantasy/docs/decisions/0004-guarding-against-corrupted-source-rows.md`.
 
 ## The problem
 
@@ -180,7 +201,8 @@ the efficiency figures on the Data sheet come from the pipeline.
 
 ## Running it
 
-Requires Python 3.11+.
+Requires Python 3.11+. The environment is shared by every project in the
+repository, so it is set up once, from the repository root:
 
     python -m venv .venv
     .venv\Scripts\pip install -r requirements.txt
@@ -190,7 +212,9 @@ solution below differs between Excel Solver and CBC, so the solver behind a
 figure is part of the figure. Every stage that solves anything prints the
 solver it used as its first line.
 
-Run from the project root, in order:
+Run from this folder, in order:
+
+    cd dss
 
     python src/01_fetch_squad.py       # club squad pool for the season
     python src/02_fetch_league.py      # league-wide comparison set (~15 min)
@@ -219,9 +243,13 @@ Two smaller helpers write the same figures to CSV, for reading outside Excel:
     python src/export_data.py         # one position's DEA peer group
     python src/export_scoring.py      # season totals and positional bests
 
-Tests:
+Tests, from this folder:
 
-    .venv\Scripts\pytest
+    pytest
+
+or every project's tests at once, from the repository root:
+
+    python run_tests.py
 
 They check the things that would otherwise break in silence: that both solved
 squads satisfy all twelve structural constraints, that the derived minutes

@@ -1,5 +1,8 @@
-# Per-player fetch cache. Reproducible by running src/02_fetch_league.py.
-data/raw/players/
+# One ignore file for the whole repository. Patterns starting **/ apply in
+# every project folder.
+
+# Per-player fetch caches. Each is rebuilt by its project's fetch stage.
+**/data/raw/players/
 
 # Python
 __pycache__/
@@ -7,6 +10,7 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+build/
 .pytest_cache/
 
 # Jupyter
@@ -22,6 +26,7 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+.claude/
 
 # Office lock files
 ~$*
