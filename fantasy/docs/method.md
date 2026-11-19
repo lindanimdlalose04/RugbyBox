@@ -78,24 +78,93 @@ Two things are checked on every run rather than assumed:
 
 ## 3. Picking the squad
 
-**Status: not started.**
+**Status: built, in `src/05_optimise.py`.**
 
-A binary integer programme. One variable per player, one if selected.
+A binary integer programme. One variable per player, one if selected, plus a
+second set for the captaincy.
 
 Maximise total projected points, subject to:
 
 - exactly the squad size the rules specify
 - total price at or below the budget
-- each position's quota satisfied
+- each position's quota satisfied exactly
 - no more than the permitted number of players from any one club
-- a captain chosen, scoring a multiple of his projection
+- exactly one captain, who must be in the squad, scoring a multiple
 
-This is a knapsack with side constraints. It is small, a few hundred binary
-variables, and solves in well under a second with CBC through PuLP.
+This is a knapsack with side constraints. It is small, 367 players and twice
+that many binary variables, and CBC solves it in well under a second.
 
-The captain choice interacts with selection, so it is solved jointly rather
-than picked afterwards: the best captain among an optimal squad is not
-necessarily the best squad-and-captain pair.
+The captain is solved jointly rather than picked afterwards, because
+doubling one player's points changes what he is worth to the squad. On this
+data that is worth **3.0 points**: picking the squad first and the captain
+second gives 348.2, and solving both together gives 351.2. Small, but it is
+the difference between a correct model and one that happens to agree.
+
+### The budget is a real constraint
+
+Checked on every run by solving twice, with the budget and without it:
+
+| | Points | Cost |
+|---|---|---|
+| Best squad, no budget | 459.9 | 160.1 |
+| Best squad within 100 | 351.2 | 100.0 |
+
+The two share only **2 of 15 players**, and the budget costs 108.7 projected
+points, 23.6% of what is theoretically available. The stage fails if the two
+squads ever come out the same, because that would mean the optimiser was
+ranking rather than choosing.
+
+Note that this is the real test, and it is stronger than the one in stage D.
+That stage compares the budget against a greedy best-per-position squad,
+which is only a lower bound. This compares the actual optimum with and
+without the constraint.
+
+### What money buys
+
+Sweeping the budget in equal steps gives the exchange rate between money and
+points:
+
+| Budget | Points | Per extra unit |
+|---|---|---|
+| 70 | 229.9 | |
+| 100 | 351.2 | 3.01 |
+| 130 | 415.7 | 1.93 |
+| 160 | 459.4 | 1.28 |
+
+The marginal value falls from 5.39 points per unit at the bottom to 1.28 at
+the top, which is what a binding budget should look like.
+
+The steps must be equal for this to be readable. A first version swept 0.8,
+0.9, 1.0, 1.1, 1.25 and 1.5 times the budget and reported the raw gain at
+each, which made a diminishing return look like a rising one: a wider step
+buys more in total while buying less per unit.
+
+## 3a. Showing it
+
+**Status: built, in `src/06_export_web.py` and `web/index.html`.**
+
+The interface has no server behind it. Every answer it can give is solved in
+advance: the budget is swept across twenty levels and the optimal squad
+recorded at each. That keeps it deployable as a static site.
+
+It is split in two on purpose. A first version opened on the trade-off curve
+and the scoring table, which was accurate and overwhelming. The front is now
+a game: a welcome with no numbers on it, then a pitch with fifteen empty
+shirts and a budget. Form is shown as one to five stars, ranked inside each
+position so a good prop is a five-star prop even though props score less than
+fly halves. When the fifteen is full, it is scored against the optimiser's
+best team at the same budget. The optimiser is the opponent, which is the
+most direct way to show what an optimum is: over 900 randomly completed teams
+none beat it, and a rule-of-thumb fill reaches 88% to 95% of it.
+
+The maths lives in a second room, the engine room: the pipeline, the budget
+curve, the rules, every player's figures, and the blind spots.
+
+Three statements are on the page because the decision records require them.
+That this is a practice league with its own scoring and not advice for a real
+competition, which is said on the welcome screen in plain words. That prices
+are modelled. And that the breakdown is invisible, because the two columns
+that would have measured it are corrupted. A test asserts they reach the page.
 
 ## 4. Planning transfers
 

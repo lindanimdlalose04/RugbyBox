@@ -36,6 +36,30 @@ release also records the date of the data snapshot it was built against.
   data at 4.3 appearances, from a split-half reliability of 0.57.
 - `src/04_price.py`, modelled prices on a convex curve, with checks on every
   run that the budget binds and that price and projection do not cancel
+- `src/05_optimise.py`, the squad and captain as one integer programme, with
+  the budget's effect measured on the optimum rather than on a greedy proxy
+- `src/06_export_web.py`, which solves the squad at 20 budget levels and
+  writes them beside the page
+- `web/index.html`, the interface, in three rooms. A welcome with no numbers
+  on it. A pitch where you fill fifteen shirts inside a budget, with form
+  shown as stars, and are then scored against the optimiser's best team. And
+  an engine room holding the budget curve, the rules, every player's figures
+  and the model's blind spots.
+- The exporter now ships the whole player pool, one canonical name per club
+  (the source spells them several ways), and a one-to-five star rating ranked
+  inside each position
+
+### Verified
+
+- The budget binds on the optimum: the best squad within 100 shares only 2 of
+  15 players with the best squad at any price, and gives up 108.7 projected
+  points, 23.6% of what is available.
+- Solving the captain jointly with the squad is worth 3.0 points over picking
+  the squad first and the captain second.
+- The marginal value of budget falls from 5.39 points per unit to 1.28, as a
+  binding constraint should.
+- The chosen squad survives a one-opt check: no swap of a selected player for
+  an unselected one in the same position improves it.
 
 ### Found
 
@@ -50,6 +74,10 @@ release also records the date of the data snapshot it was built against.
   columns as two of its four outputs, over the same competition and season.
 
 ### Changed
+
+- The first interface put the trade-off curve and the scoring table on the
+  opening screen. It was accurate and overwhelming. The numbers moved behind
+  a tab and the opening screen became an invitation to play.
 
 - Tackles raised from 1.5 to 2.0 points, rebalancing the positions after the
   loss of turnovers. Best-to-worst position ratio is 1.91.

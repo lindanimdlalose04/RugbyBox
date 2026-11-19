@@ -36,12 +36,33 @@ known solutions.
 | Scoring rules | settled, tuned against 3 821 real appearances |
 | Points projection | working, 373 players, shrunk by evidence |
 | Player prices | working, modelled, and the budget binds |
-| Optimiser | not started |
-| Interface | not started |
+| Optimiser | working, picks a squad and a captain |
+| Interface | working, `web/index.html`: a game up front, the maths behind |
+| Transfer planning | not started |
+| Risk setting | not started |
 
 This project uses **its own scoring system**, not any published game's. It is
 a tool for demonstrating the method, not a companion to a real competition,
 and the squads it picks are not advice for one.
+
+## What it produces today
+
+The best fifteen inside a budget of 100, with a captain, from 367 players:
+
+| Position | Players |
+|---|---|
+| Props | Joe Heyes, George Kloska |
+| Hooker | George McGuigan |
+| Locks | Arthur Clark, Ollie Chessum |
+| Loose forwards | Chandler Cunningham-South, Will Evans, Ethan Roots |
+| Scrum half | Stephen Varney |
+| Fly half | George Ford (captain) |
+| Centres | Rekeiti Ma'asi-White, Tom Litchfield |
+| Back three | Noah Caluori, Ollie Hassell-Collins, Cadan Murley |
+
+351.2 projected points, costing exactly 100.0. Without the budget the best
+squad scores 459.9 and costs 160.1, and shares only two of these fifteen
+players, so the budget is doing the work rather than decorating the model.
 
 ## Running it
 
@@ -56,8 +77,21 @@ Then, from the project root:
     python src/02_clean.py     # the appearance table, with the quality guards
     python src/03_project.py   # expected points per player
     python src/04_price.py     # modelled prices, and the budget checks
+    python src/05_optimise.py  # the squad, the captain, and what money buys
+    python src/06_export_web.py   # solve across budgets for the interface
 
-Player files are cached, so a re-run only fetches what is missing.
+Then open `web/index.html`. It has three rooms:
+
+- **Welcome.** One line and a button. No numbers.
+- **Play.** A pitch with fifteen empty shirts and a budget. Tap a shirt, pick a
+  player, with form shown as stars rather than figures. Blow the whistle and
+  your fifteen is scored against the best team the optimiser can find.
+- **Engine room.** Where the maths lives: how the machine picks, the budget
+  curve, the scoring rules, every player's numbers, and what the model cannot
+  see.
+
+It needs no server. The optimiser is run for every budget ahead of time and
+the answers ship beside the page, so it can be served as a static site.
 
     .venv\Scripts\pytest       # add --network to also read the live store
 
