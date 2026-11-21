@@ -3,8 +3,8 @@
 Pick a fantasy rugby squad that scores the most points your budget allows,
 and plan your transfers more than one week ahead.
 
-> **Version 0.2.0.** Playable: build a fifteen and play it against the
-> optimiser. Transfer planning and a risk setting are still to come. Part of
+> **[Play it here](https://lindanimdlalose04.github.io/RugbyBox/).** Version 0.2.0: build a fifteen and play it
+> against the optimiser. Transfer planning and a risk setting are still to come. Part of
 > the [RugbyBox repository](../README.md).
 
 ## The problem
@@ -94,7 +94,10 @@ Then open `web/index.html`. It has three rooms:
   see.
 
 It needs no server. The optimiser is run for every budget ahead of time and
-the answers ship beside the page, so it can be served as a static site.
+the answers ship beside the page, so it is served as a static site: it is
+published to https://lindanimdlalose04.github.io/RugbyBox/ by `.github/workflows/pages.yml` at the repository root
+whenever anything in `web/` changes on `main`. To publish new numbers, re-run
+the stages, commit the regenerated `web/data.js`, and push.
 
 Tests, from this folder:
 

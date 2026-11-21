@@ -218,3 +218,42 @@ def test_the_game_budgets_have_solved_squads(payload):
     budgets = {float(b) for b in re.findall(r'data-budget="(\d+)"', html)}
     solved = {s["budget"] for s in payload["scenarios"]}
     assert budgets and budgets <= solved
+
+
+# --- ready to be served as a website --------------------------------------
+
+def test_the_page_is_a_complete_document():
+    """GitHub Pages serves the file as it is, with nothing added.
+
+    Without a doctype the browser falls back to quirks mode, and without a
+    viewport tag a phone renders a shrunken desktop page.
+    """
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    assert html.lstrip().lower().startswith("<!doctype html>")
+    assert '<meta charset="utf-8">' in html
+    assert 'name="viewport"' in html
+    assert "</head>" in html and "<body>" in html and "</html>" in html
+
+
+def test_hidden_things_stay_hidden_outside_claude():
+    """The picker overlay, the legend and the action buttons all set their own
+    display, which beats the browser's default for the hidden attribute. The
+    page has to restate the rule itself, or the overlay covers the screen."""
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    style = html[html.index("<style>"):html.index("</style>")]
+    assert "[hidden]{display:none!important}" in style
+    # Last in the sheet, so it wins even where !important is not honoured.
+    tail = style.rstrip().splitlines()[-1]
+    assert tail.strip() == "[hidden]{display:none!important}"
+
+
+def test_the_page_only_loads_what_it_can_reach_when_hosted():
+    """Every local file is referenced relatively, so it works under any path,
+    including the /RugbyBox/ prefix GitHub Pages adds."""
+    import re
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    for src in re.findall(r'(?:src|href)="([^"#]+)"', html):
+        if src.startswith(("https://", "data:", "mailto:")):
+            continue
+        assert not src.startswith("/"), f"{src} would break under /RugbyBox/"
+        assert (WEB / src).exists(), f"{src} is referenced but not shipped"

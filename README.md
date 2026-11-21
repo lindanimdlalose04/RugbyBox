@@ -5,6 +5,8 @@ Rugby selection problems, solved with real match data and optimisation.
 This repository holds two projects built on the same data. One is a game you
 can play. The other is the decision support system it grew out of.
 
+**[Play Fantasy Rugby Box](https://lindanimdlalose04.github.io/RugbyBox/)** in your browser. Nothing to install.
+
 | Project | What it is | State | Latest |
 |---|---|---|---|
 | [**Fantasy Rugby Box**](fantasy/README.md) | Pick a fantasy fifteen on a budget, then play it against the best team an optimiser can find | Active | `fantasy-v0.2.0` |
@@ -31,6 +33,7 @@ it started with.
       rugbystore/       the reader for the rugbydata parquet store
 
     docs/               decisions about the repository as a whole
+    .github/workflows/  publishes the game to GitHub Pages
     run_tests.py        runs every project's tests
 
 Each project has its own README explaining how to run it, its own changelog,

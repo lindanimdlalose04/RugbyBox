@@ -12,7 +12,19 @@ versioned on its own. Its releases are tagged `fantasy-vX.Y.Z`.
 
 ## Unreleased
 
-Nothing yet.
+### Added
+
+- The game is published to GitHub Pages at https://lindanimdlalose04.github.io/RugbyBox/, by a workflow that
+  uploads `web/` whenever it changes on `main`.
+
+### Fixed
+
+- The page only worked inside Claude's artifact viewer, which quietly adds a
+  page header and a rule keeping hidden elements hidden. Served as it was,
+  the player-picker overlay covered the screen on load, the machine-team
+  legend was always visible, the action buttons stayed at full time, and
+  phones got a shrunken desktop page. It is now a complete document that
+  works on any host, with tests that keep it that way.
 
 ## 0.2.0, 2026-11-19
 
