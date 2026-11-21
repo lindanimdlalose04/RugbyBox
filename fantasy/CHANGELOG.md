@@ -32,6 +32,10 @@ versioned on its own. Its releases are tagged `fantasy-vX.Y.Z`.
   shirt's label wraps onto two lines instead.
 - After the whistle, the bank card kept saying "Blow the whistle when you
   are ready". It now says it is full time.
+- The site failed to republish: the publishing workflow used out-of-date
+  versions of GitHub's actions, and the publish step could not find the
+  package the upload step had just made. All four actions are upgraded
+  together to their current versions.
 
 ## 0.2.0, 2026-11-19
 
