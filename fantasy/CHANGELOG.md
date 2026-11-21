@@ -25,6 +25,13 @@ versioned on its own. Its releases are tagged `fantasy-vX.Y.Z`.
   legend was always visible, the action buttons stayed at full time, and
   phones got a shrunken desktop page. It is now a complete document that
   works on any host, with tests that keep it that way.
+- On phones, shirt labels were cut off: at 375px wide, three position names
+  and 51 of 330 surnames. Shirts are now wider on small screens and the
+  labels slightly smaller, so no position name is cut and only the three
+  longest surnames end in an ellipsis. On the smallest phones an empty
+  shirt's label wraps onto two lines instead.
+- After the whistle, the bank card kept saying "Blow the whistle when you
+  are ready". It now says it is full time.
 
 ## 0.2.0, 2026-11-19
 

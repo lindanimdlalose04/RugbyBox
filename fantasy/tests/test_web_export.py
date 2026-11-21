@@ -257,3 +257,27 @@ def test_the_page_only_loads_what_it_can_reach_when_hosted():
             continue
         assert not src.startswith("/"), f"{src} would break under /RugbyBox/"
         assert (WEB / src).exists(), f"{src} is referenced but not shipped"
+
+
+# --- small screens and the end of a match ---------------------------------
+
+def test_phones_get_wider_shirts():
+    """Measured on a 375px phone: with three shirts a row at 23% each, three
+    position names and 51 of 330 surnames were cut off. At 31% with slightly
+    smaller text, no position name is cut and only the three longest
+    surnames are. The smallest phones also let an empty label wrap."""
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    style = html[html.index("<style>"):html.index("</style>")]
+    phone = style[style.index("@media (max-width:480px)"):]
+    assert ".slot{width:31%}" in phone
+    tiny = style[style.index("@media (max-width:360px)"):]
+    assert ".slot.empty .nm{white-space:normal" in tiny
+
+
+def test_the_bank_card_knows_the_match_is_over():
+    """After the whistle it used to keep saying 'Blow the whistle'."""
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    side = html[html.index("function drawSide"):html.index("function drawFullTime")]
+    first_branch = side[side.index("var hint"):].splitlines()[1]
+    assert "state.done" in first_branch, "the full-time message must be checked first"
+    assert "Full time" in first_branch
